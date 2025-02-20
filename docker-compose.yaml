@@ -1,0 +1,41 @@
+services:
+  mysql:
+    image: mysql:latest             # Official MySQL image from Docker Hub
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: nest_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  backend:
+    image: hasan2962/sample_project-backend:latest  # Pulls from Docker Hub
+    container_name: nestjs_app
+    restart: always
+    depends_on:
+      - mysql
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - DB_NAME=nest_db
+
+  frontend:
+    image: hasan2962/sample_project-frontend:latest     # Pulls from Docker Hub
+    container_name: vue_app
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+
+volumes:
+  mysql_data:
